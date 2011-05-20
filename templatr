@@ -12,7 +12,7 @@ optparse = OptionParser.new do|opts|
   opts.banner = BANNER
 
   # Define the options, and what they do
-  options[:data_file] = false
+  options[:data_file] = "---#Empty"
   opts.on('-d', '--data_file FILE', 'Use data file for templating') do |file|
     options[:data_file] = file
   end
