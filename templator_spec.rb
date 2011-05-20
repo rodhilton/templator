@@ -93,4 +93,31 @@ describe Templator do
 
   end
 
+  it "should support allow traversal through nil objects" do
+
+    data = <<-EOF
+      one:
+        two: three
+    EOF
+
+    template = <<-EOF
+      stuff: <%= one.four %>
+      stuff2: <%= one.four.five.six %>
+      stuff3: <%= nothing.here %>
+      stuff4: <%= "works" if there.are.no.limits.to.dot.chaining.nil? %>
+      anything: <%= "truthy" unless nilobjects.do.not.count.as.truthy %>
+    EOF
+
+    templater = Templator.new(template)
+
+    result = templater.fill_in(data, :test=>"stuff")
+
+    result.should =~ /stuff: $/
+    result.should =~ /stuff2: $/
+    result.should =~ /stuff3: $/
+    result.should =~ /stuff4: works/
+    result.should =~ /anything: truthy/
+
+  end
+
 end

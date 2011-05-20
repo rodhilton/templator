@@ -1,3 +1,11 @@
+# Templator is a program that can take a template and a data file
+# and run both through ERB in order to parse and generate output
+# for the template.
+#
+# Author::    Rod Hilton
+# Copyright:: Copyright (c) 2002 The Pragmatic Programmers, LLC
+# License::   Distributes under the same terms as Ruby
+
 require 'yaml'
 require 'erb'
 
@@ -5,20 +13,34 @@ class ::Hash
   def method_missing(name)
     return self[name] if key? name
     self.each { |k,v| return v if k.to_s.to_sym == name }
-    super.method_missing name
+    nil
   end
 end
 
+class NilClass
+  #This allows limitless dot-chaining. object.any.thing.will.be.nil
+  def method_missing(name)
+    nil
+  end
+end
 
+# This class does most of the work for the Templator program,
+# constructed with a template and capable of performing the fill_in
+# work when given a data object and optional flags
 class Templator
-  def initialize(template, options={})
+  def initialize(template)
     @template = template
   end
 
-  def fill_in(data, options={})
-    save_flags options
+  def fill_in(data, flags={})
+    save_flags flags
     save_data data
     do_template
+  end
+
+  # This is here to allow usage of objects that aren't actually defined in a data file inside of the template
+  def method_missing(name)
+    nil
   end
 
   private
