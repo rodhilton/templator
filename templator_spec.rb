@@ -1,6 +1,6 @@
-require_relative 'parser'
+require_relative 'templator'
 
-describe Templater do
+describe Templator do
 
   it "should parse yaml and substitute into templates" do
 
@@ -28,13 +28,29 @@ describe Templater do
       At my next company I <%= experience.jobs[1].accomplishments[0] %>
     EOF
 
-    templater = Templater.new(template)
+    templater = Templator.new(template)
 
     result = templater.fill_in(data)
 
     result.should =~ /My first job was Company X/
     result.should =~ /I was there 2000-Present/
     result.should =~ /At my next company I Kicked Ass/
+
+  end
+
+  it "should ignore empty data file" do
+
+    data = "---#nothin"
+
+    template = <<-EOF
+      Stuff
+    EOF
+
+    templater = Templator.new(template)
+
+    result = templater.fill_in(data)
+
+    result.should =~ /Stuff/
 
   end
 
@@ -49,7 +65,7 @@ describe Templater do
       false: <%= @flags[:option] %>
     EOF
 
-    templater = Templater.new(template)
+    templater = Templator.new(template)
 
     result = templater.fill_in(data, :option=>false)
 
@@ -69,7 +85,7 @@ describe Templater do
       stuff: <%= one.two %>
     EOF
 
-    templater = Templater.new(template)
+    templater = Templator.new(template)
 
     result = templater.fill_in(data, :test=>"stuff")
 

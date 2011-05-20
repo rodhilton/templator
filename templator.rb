@@ -1,5 +1,4 @@
 require 'yaml'
-require 'pp'
 require 'erb'
 
 class ::Hash
@@ -11,7 +10,7 @@ class ::Hash
 end
 
 
-class Templater
+class Templator
   def initialize(template, options={})
     @template = template
   end
@@ -32,7 +31,7 @@ class Templater
     @ruby_obj = YAML::load(data)
     @ruby_obj.each_pair do |key, value|
       save_data_object(key, value)
-    end
+    end if @ruby_obj.respond_to?(:each_pair)
   end
 
   def do_template
