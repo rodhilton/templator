@@ -3,7 +3,7 @@
 # for the template.
 #
 # Author::    Rod Hilton
-# Copyright:: Copyright (c) 2002 The Pragmatic Programmers, LLC
+# Copyright:: Copyright (c) 2011 Rod Hilton
 # License::   Distributes under the same terms as Ruby
 
 require 'yaml'
