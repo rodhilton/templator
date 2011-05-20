@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+require_relative 'parser'
+
+require 'optparse'
+
+options = {}
+
+BANNER = "Usage: templatr [options] template_file ..."
+
+optparse = OptionParser.new do|opts|
+  opts.banner = BANNER
+
+  # Define the options, and what they do
+  options[:data_file] = false
+  opts.on('-d', '--data_file FILE', 'Use data file for templating') do |file|
+    options[:data_file] = file
+  end
+
+  options[:flags] = {}
+  opts.on('-f', '--flag name[:value]', 'Sets a flag with optional value') do |flag|
+    if flag =~ /(.*?):(.*)/
+      flag_match=Regexp.last_match
+      options[:flags][flag_match[1].to_sym]=flag_match[2]
+    else
+      options[:flags][flag.to_sym]=true
+    end
+  end
+
+  # This displays the help screen, all programs are
+  # assumed to have this option.
+  opts.on('-h', '--help', 'Display this screen') do
+    puts opts
+    exit
+  end
+end
+
+optparse.parse!
+
+if ARGV[0].nil?
+  puts BANNER
+  exit
+end
+
+template_contents = File.read(ARGV[0])
+
+if template_contents.nil?
+  puts "Could not read file #{ARGV[0]}"
+  exit
+end
+
+templater = Templater.new(template_contents)
+
+data_file = File.read(options[:data_file]) || ""
+
+result = templater.fill_in(data_file, options[:flags])
+
+puts result
