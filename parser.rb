@@ -16,20 +16,39 @@ class Templater
     @template = template
   end
 
+  def fill_in(data, options={})
+    save_flags options
+    save_data data
+    do_template
+  end
+
+  private
+  def save_flags(options)
+    save_data_object("flags", options)
+  end
+
+  def save_data(data)
+    data = ERB.new(data).result(binding)
+    @ruby_obj = YAML::load(data)
+    @ruby_obj.each_pair do |key, value|
+      save_data_object(key, value)
+    end
+  end
+
+  def do_template
+    erb_template = ERB.new @template
+    erb_template.result(binding)
+  end
+
+  def save_data_object(key, value)
+    metaclass.send :attr_accessor, key
+    send "#{key}=".to_sym, value
+  end
+
   def metaclass
     class << self
       self
     end
   end
 
-  def fill_in(document, options={})
-    @flags = options
-    @ruby_obj = YAML::load( document )
-    @ruby_obj.each_pair do |key, value|
-      metaclass.send :attr_accessor, key
-      send "#{key}=".to_sym, value
-    end
-    erb_template = ERB.new @template
-    erb_template.result(binding)
-  end
 end

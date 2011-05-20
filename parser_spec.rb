@@ -7,30 +7,34 @@ describe Templater do
     data = <<-EOF
       experience:
         jobs:
-          - company: Rally Software
-            title: Java Web Applications Developer
-            time: 2008-Present
+          - company: Company X
+            title: Widget Genius
+            time: 2000-Present
             accomplishments:
-              - Helped make ALM
-              - Made Rallydroid
-          - company: OpenLogic, Inc
-            title: Software Engineer
-            time: 2007-2008
+              - Made Widgets
+              - Made More Widgets
+          - company: Company Y
+            title: Truck Driver
+            time: 1990-2000
             accomplishments:
-              - Census
-              - OLEX
+              - Kicked Ass
+              - Chewed Bubblegum
 
     EOF
 
     template = <<-EOF
       My first job was <%= @experience.jobs[0].company %>
+      I was there <%= @experience.jobs[0].time %>
+      At my next company I <%= experience.jobs[1].accomplishments[0] %>
     EOF
 
     templater = Templater.new(template)
 
     result = templater.fill_in(data)
 
-    result.should =~ /My first job was Rally Software/
+    result.should =~ /My first job was Company X/
+    result.should =~ /I was there 2000-Present/
+    result.should =~ /At my next company I Kicked Ass/
 
   end
 
@@ -50,6 +54,26 @@ describe Templater do
     result = templater.fill_in(data, :option=>false)
 
     result.should =~ /false: false/
+
+  end
+
+
+  it "should support options in data file" do
+
+    data = <<-EOF
+      one:
+        two: <%= @flags[:test] %>
+    EOF
+
+    template = <<-EOF
+      stuff: <%= one.two %>
+    EOF
+
+    templater = Templater.new(template)
+
+    result = templater.fill_in(data, :test=>"stuff")
+
+    result.should =~ /stuff: stuff/
 
   end
 
