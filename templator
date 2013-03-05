@@ -18,8 +18,8 @@ BANNER = "Usage: templator [options] template_file ..."
 optparse = OptionParser.new do|opts|
   opts.banner = BANNER
 
-  opts.on('-d', '--data-file FILE', 'Use data file for templating') do |file|
-    options[:data_file] = file
+  opts.on('-d', '--data-files FILE1,FILE2,FILE3', Array, 'Use data files for templating') do |file|
+    options[:data_files] = file
   end
 
   options[:flags] = {}
@@ -56,13 +56,12 @@ end
 
 templator = Templator.new(template_contents)
 
-
-if options[:data_file]
-  data_file = File.read(options[:data_file]) || "---#Empty"
+if options[:data_files]
+  data_files = options[:data_files].collect{ |data_file| File.read(data_file) || "---#Empty" }
 else
-  data_file = "---#Empty"
+  data_files = ["---#Empty"]
 end
 
-result = templator.fill_in(data_file, options[:flags])
+result = templator.fill_in(data_files, options[:flags])
 
 puts result

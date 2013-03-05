@@ -32,9 +32,11 @@ class Templator
     @template = template
   end
 
-  def fill_in(data, flags={})
+  def fill_in(data_files, flags={})
     save_flags flags
-    save_data data
+    data_files.each do |data|
+      save_data data
+    end
     do_template
   end
 
