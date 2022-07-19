@@ -51,7 +51,7 @@ class Templator
   end
 
   def save_data(data)
-    data = ERB.new(data).result(binding)
+    data = ERB.new(data, nil, "-").result(binding)
     @ruby_obj = YAML::load(data)
     @ruby_obj.each_pair do |key, value|
       save_data_object(key, value)
@@ -59,7 +59,7 @@ class Templator
   end
 
   def do_template
-    erb_template = ERB.new @template
+    erb_template = ERB.new(@template, nil, "-")
     erb_template.result(binding)
   end
 
